@@ -21,31 +21,29 @@ const checkForWin = (currentPlayer) => {
 };
 
 const checkForDraw = () => {
-    return [...cells].every(cell => {
-        return cell.textContent === 'X' || cell.textContent === 'O';
-    });
+    return [...cells].every(cell => cell.textContent && cell.textContent !== '');
 };
 
-const endGame = (draw) => {
-    if (draw) {
+const endGame = (winner) => {
+    if (winner === 'Draw') {
         alert('Draw!');
     } else {
-        alert(`${currentPlayer} Wins!`);
+        alert(`${winner} Wins!`);
     }
     resetGame();
 };
 
 const aiMove = () => {
-    const availableCells = [...cells].filter(cell => cell.textContent === '');
+    const availableCells = [...cells].filter(cell => !cell.textContent);
     if (availableCells.length === 0) return;
     const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
     randomCell.textContent = 'O';
-    currentPlayer = "X";
     if (checkForWin('O')) {
-        endGame(false);
+        endGame('O');
     } else if (checkForDraw()) {
-        endGame(true);
+        endGame('Draw');
     }
+    currentPlayer = "X";
 };
 
 const resetGame = () => {
@@ -57,12 +55,12 @@ const resetGame = () => {
 
 cells.forEach(cell => {
     cell.addEventListener('click', (e) => {
-        if (e.target.textContent !== '' || currentPlayer !== "X") return;
+        if (e.target.textContent || currentPlayer !== "X") return;
         e.target.textContent = currentPlayer;
         if (checkForWin(currentPlayer)) {
-            endGame(false);
+            endGame(currentPlayer);
         } else if (checkForDraw()) {
-            endGame(true);
+            endGame('Draw');
         } else {
             currentPlayer = "O";
             setTimeout(aiMove, 500); // AI makes a move after a short delay
